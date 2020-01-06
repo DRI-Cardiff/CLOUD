@@ -4,31 +4,40 @@ library(pryr)
 
 setwd("~/Desktop/g1000_phase3/")
 
-
-
+# set directory where plink.exe is located
+userdir <- 'Emily/Software/plink'
 
 nsnps <- c(2,5,10,50,100,500,1000,5000,10000,50000, 100000, 500000)
 
+# read in .bim file
 bim <- fread("./g1000_phase3_geno.bim", header=F, data.table=F)
 
+#loops through all specified nSNPs
 for (i in 1: length(nsnps)){
 	
+  # start clock
 	start_time<- Sys.time()
 	ram <- c()
 	
+	# randomly sample N rows from total genome
 	a<- sample(1:nrow(bim), nsnps[i], replace=F)
-	
+	# write to table, store as text
 	write.table(bim[a,2], paste("./", nsnps[i], "SNPs.txt", sep=""), col.names=F, row.names=F, quote=F)
 	
-	command <- sprintf("/Users/Emily/Software/plink/plink --bfile ./g1000_phase3_geno --extract %sSNPs.txt --recodeA --out g1000_phase3_geno_%sSNPs", nsnps[i], nsnps[i])
+	# filter out all variants not in the provided file
+	command <- sprintf("/Users/%s/plink --bfile ./g1000_phase3_geno --extract %sSNPs.txt --recodeA --out g1000_phase3_geno_%sSNPs", userdir,nsnps[i], nsnps[i])
 	system(command)
 	ram <- c(ram, mem_used())
 	
+	# format into dataframe
 	data <- fread(paste("./g1000_phase3_geno_", nsnps[i], "SNPs.raw", sep=""), header=T, data.table=F)
 	ram <- c(ram, mem_used())
 	
+	# set an arbitrary probability of the phenotype occurring at 30% 
 	data$PHENOTYPE <- rbinom(1:nrow(data), size=1, prob=0.3)
+	  # in real data this would be provided as a separate column in the input
 	
+	# return binomial coefficients, format into dataframe
 	nresults <- choose(nsnps[i], 2)
 	results <- data.frame(matrix(nrow=nresults, ncol=17))
 	colnames(results)<- c("SNP1", "SNP2", "SNP1_BETA_CRUDE", "SNP1_SE_CRUDE", "SNP1_P_CRUDE", "SNP2_BETA_CRUDE", "SNP2_SE_CRUDE", "SNP2_P_CRUDE", "SNP1_BETA_ADJ", "SNP1_SE_ADJ", "SNP1_P_ADJ", "SNP2_BETA_ADJ", "SNP2_SE_ADJ", "SNP2_P_ADJ", "INT_BETA", "INT_SE", "INT_P")
@@ -41,6 +50,7 @@ for (i in 1: length(nsnps)){
 			
 			count <- count+1
 			
+			# gather all results into table
 			results[count, 1] <- as.character(colnames(data)[(x+6)])
 			results[count, 2] <- as.character(colnames(data)[(y+6)])
 			
@@ -77,17 +87,17 @@ for (i in 1: length(nsnps)){
 		}
 	}
 	
+	# order table by ascending p-value
 	results <- results[order(as.numeric(results$INT_P)), ]
 	ram <- c(ram, mem_used())	
 	write.table(results, paste("./Results_interactions_g1000_phase3_geno_", nsnps[i], "SNPs.txt", sep=""), col.names=T, row.names=F, quote=F, sep="\t")
 	ram <- c(ram, mem_used())
-
+  
+	# output time and memory usage
 	print(paste(nsnps[i], "SNPs", sep=""))	
 	print("Computational time:")
 	print(Sys.time()-start_time)
 	print("Memory Used (GB):")
-	print(max(ram/1000000000))
+	print(max(ram/1024^3))
 	
 }
-
-
