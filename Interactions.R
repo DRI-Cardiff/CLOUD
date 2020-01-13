@@ -5,7 +5,8 @@ library(pryr)
 setwd("~/Desktop/g1000_phase3/")
 
 # set directory where plink.exe is located
-userdir <- 'Emily/Software/plink'
+# userdir <- 'Users/Emily/Software/plink'
+userdir <- 'E:\WorkPCBackup\DRI\D Drive\CLOUD_temp\g1000_phase3_plink'
 
 nsnps <- c(2,5,10,50,100,500,1000,5000,10000,50000, 100000, 500000)
 
@@ -24,8 +25,8 @@ for (i in 1: length(nsnps)){
 	# write to table, store as text
 	write.table(bim[a,2], paste("./", nsnps[i], "SNPs.txt", sep=""), col.names=F, row.names=F, quote=F)
 	
-	# filter out all variants not in the provided file
-	command <- sprintf("/Users/%s/plink --bfile ./g1000_phase3_geno --extract %sSNPs.txt --recodeA --out g1000_phase3_geno_%sSNPs", userdir,nsnps[i], nsnps[i])
+	# filter out all variants not in the provided file, recode into new file
+	command <- sprintf("/%s/plink --bfile ./g1000_phase3_geno --extract %sSNPs.txt --recodeA --out g1000_phase3_geno_%sSNPs", userdir, nsnps[i], nsnps[i])
 	system(command)
 	ram <- c(ram, mem_used())
 	
