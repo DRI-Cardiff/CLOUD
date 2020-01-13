@@ -1,0 +1,58 @@
+#####################################
+#									#
+#      Project Cloud Overview       #
+#									#
+#####################################
+
+### PURPOSE
+The aim of this project is to examine whether the use of cloud platforms can provide a faster, cheaper, and/or more efficient method of analysing genomic data than the current methods employed by the Cardiff DRI.
+Currently, work at the Cardiff DRI involving the processing of large datasets is conducted using the CU's in-house high-performance computing unit - ARCCA.  Cardiff pays an amount (???) each year to ARCCA to have dedicated use of a number of CPU hours.
+Using a web-based cloud service may be cheaper than the payments currently made to ARCCA.  It may also open up avenues for optimisation, which could increase the speed and/or efficiency with which computationally complex tasks are performed.
+If this trial is successful, it can be used as a pilot for other DRI centres to migrate some or all of their processing onto cloud services.
+
+### METHODS
+Two distinct tasks will be performed on both the ARCCA system and the Cloud system.  These are pairwise interactions and matrix inversion.  These will be examined with an increasing number of SNPs.  
+Pairwise interactions take longer with higher numbers of SNPs, but the memory requirements remain static as this is a series of single operations.  
+For matrix inversion, the time taken does not increase as rapidly, but the memory requirements grow with increasing matrix sizes.  
+These two methods therefore test the two primary considerations of this comparison - processing time and memory requirements.
+
+#################################
+#	Stage One - Processing		#
+#################################
+
+Before data can be processed, they need to be processed into datasets of N SNPs (where N is a set ranging from <10 to >10,000).
+This requires that the file containing all the genomes is processed into a various sized datasets.
+This process will be performed in ARCCA, but will not be tracked.  The various sizes of dataset are intended to simulate variously sized real datasets, for which this processing will not be required.
+
+Genomes will be split by number of SNPs using the following sets:
+- Pairwise Interaction 	[2,5,10,50,100,500,1000,5000,10000,50000,100000,500000]
+- Matrix Inversion 		[2,5,10,50,100,500,1000,5000,10000,50000,100000,500000]
+
+Within each iteration, a binary variable will be added to simulate the presence or absence of a phenotype [1 0].  This will be random, with a probability of occurrence of 0.3.
+
+#################################
+#	Stage Two - Computation		#
+#################################
+
+### FILE UPLOAD [CLOUD ONLY]
+For the Cloud system it is necessary to upload the requisite files to the Cloud prior to processing.  Therefore the total filesize for that NSNPs will be recorded, along with the upload time and speed metrics.  As upload time will vary with the speed available, this must be considered in light of this.
+
+### COMPUTATION
+Both types of computation will be performed.  The time taken to complete this task, along with the maximum memory requirements, will be recorded for each task and for each NSNPs.
+
+## PAIRWISE INTERACTION 
+A binomial regression (logistic) will be performed using the SNPs as predictors for the phenotype variable.  This will report the beta coefficients and standard errors for the SNPs individually, their interaction, and adjusted for partial variance.  The output file will reflect this, with one row per SNP pairing.  The size of this output file will be recorded.  This can also be calculated prior to processing.
+
+## MATRIX INVERSION 
+A matrix will be generated that plots the co-occurrence (correlation) of each SNP with each other SNP, resulting in an N-by-N matrix.  This will then be inverted, creating an additional matrix of N-by-N.  This resulting matrix will constitute the output file.  The size of this output file will be recorded.  This can also be calculated prior to processing.
+
+### FILE DOWNLOAD [CLOUD ONLY]
+For the Cloud system it is also necessary to download the output files for each task and NSNPs.  Again the time taken for this to complete will be recorded, along with download speed metrics.
+
+#################################
+#	Stage Three - Comparison 	#
+#################################
+
+In order to report the findings of this project, comparisons will be drawn between use of the HPC systems, and the Cloud systems.
+A table will be generated that compares the computation times and memory requirements on each system for each task and NSNPs.  This may also be collated into a figure(s) for easier visual comparison.
+Consideration will also be made of the cost of running these tasks on a Cloud system, as compared to the flat fees required for the use of ARCCA.
