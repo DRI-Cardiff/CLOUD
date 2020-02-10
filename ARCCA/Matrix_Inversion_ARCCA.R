@@ -24,6 +24,10 @@ for (i in 1: length(nsnps)){
 	
 	# perform correlation
 	co <- cor(as.matrix(data[, 7:ncol(data)]))
+	
+	# this is a bit of a hack, turns all NA to zero
+	co[is.na(co)] <- 0
+	
 	ram <- c(ram, mem_used())
 	
 	# generate eigenvalues and eigenvectors
