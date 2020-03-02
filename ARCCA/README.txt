@@ -12,3 +12,5 @@ ARCCA_interaction.csv
 Matrix_Inversion_ARCCA.R [WIP]
   This R program loops through different values of nSNPs, performs a matrix inversion on the loaded genomic data (.raw), and outputs the results of that operation.
   
+ARCCA_inversion.csv
+  This gives the results of the processing that has been performed at the current time.
